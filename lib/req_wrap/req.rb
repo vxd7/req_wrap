@@ -3,8 +3,8 @@
 require 'logger'
 require 'http'
 
-require_relative 'environment'
-require_relative 'request_callable'
+require 'req_wrap/environment'
+require 'req_wrap/request_callable'
 
 module ReqWrap
   DEFAULT_LOGGER = Logger.new($stdout)
@@ -37,20 +37,20 @@ module ReqWrap
       @response&.request
     end
 
+    def save_response
+      req_class = self.class.name.demodulize.underscore
+      time = Time.now.utc.iso8601(4)
+      filename = "#{req_class}_#{time}_response.txt"
+
+      File.write(filename, @response)
+
+      filename
+    end
+
     private
 
     def e(name)
       ENV.fetch(name.to_s.upcase)
-    end
-
-    def save_body(response)
-      req_class = self.class.name.demodulize.underscore
-      time = Time.now.utc.iso8601(4)
-      filename = "#{req_class}_#{time}_response_body.txt"
-
-      File.write(filename, response)
-
-      filename
     end
 
     def without_ssl(client)
