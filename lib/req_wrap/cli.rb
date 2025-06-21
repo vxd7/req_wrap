@@ -2,6 +2,8 @@
 
 require 'optparse'
 
+require 'req_wrap/generator/req'
+
 module ReqWrap
   class Cli
     COMMAND_ALIASES = {
@@ -9,15 +11,16 @@ module ReqWrap
       'environment' => %w[environment e env]
     }.freeze
 
-    def initialize(argv)
-      @arguments = argv.dup
+    def initialize
       @options = {}
     end
 
-    def call
-      user_command = @arguments.shift
+    def call(args)
+      arguments = args.dup
+      user_command = arguments.shift
+
       command = find_command(user_command)
-      return send(command, ARGV) if command
+      return send(command, arguments) if command
 
       puts common_options
       exit(1)
@@ -66,7 +69,12 @@ module ReqWrap
         p.separator(generate_examples)
       end
 
-      parser.parse(args)
+      parser.parse!(args)
+
+      request_file = args.shift.strip
+      raise ArgumentError, 'request_file is required' unless request_file
+
+      Generator::Req.new(request_file).call
     end
 
     def environment_banner
@@ -99,7 +107,7 @@ module ReqWrap
         p.separator(environment_examples)
       end
 
-      parser.parse(args)
+      parser.parse!(args)
     end
 
     def find_command(user_command)

@@ -2,4 +2,4 @@
 
 require 'req_wrap/cli'
 
-ReqWrap::Cli.new(ARGV).call
+ReqWrap::Cli.new.call(ARGV)
