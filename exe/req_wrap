@@ -1,3 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'req_wrap'
+require 'req_wrap/cli'
+
+ReqWrap::Cli.new(ARGV).call
