@@ -99,7 +99,7 @@ module ReqWrap
 
     def environment(args)
       parser = OptionParser.new(environment_banner) do |p|
-        p.on('--gen-pass', 'Generate passford file')
+        p.on('--gen-pass', 'Generate password file')
         p.on('--enc <env_file>', 'Encrypt environment file and write the result to env_file.enc file')
         p.on('--delete-original', 'Delete original environment file after encryption')
 
