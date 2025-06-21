@@ -2,6 +2,7 @@
 
 require 'optparse'
 
+require 'req_wrap/environment'
 require 'req_wrap/generator/req'
 
 module ReqWrap
@@ -12,7 +13,9 @@ module ReqWrap
     }.freeze
 
     def initialize
-      @options = {}
+      @options = {
+        delete_original: false
+      }
     end
 
     def call(args)
@@ -86,12 +89,8 @@ module ReqWrap
     end
 
     def environment_examples
-      require 'req_wrap/environment'
-      key_file_name = Environment::KEY_FILE
-
       <<~EXAMPLES
         Examples of invocation:
-        - req_wrap e --gen-pass           # Generate password file for env variable files encryption ('#{key_file_name}')
         - req_wrap e --enc env_file.env   # Encrypt environment file env_file.env using generated password
         - E=env_file.env req_wrap e --enc # Encrypt environment file env_file.env using generated password
       EXAMPLES
@@ -99,15 +98,39 @@ module ReqWrap
 
     def environment(args)
       parser = OptionParser.new(environment_banner) do |p|
-        p.on('--gen-pass', 'Generate password file')
-        p.on('--enc <env_file>', 'Encrypt environment file and write the result to env_file.enc file')
-        p.on('--delete-original', 'Delete original environment file after encryption')
+        environment_add_gen_pass_option(p)
+        environment_add_enc_option(p)
+        environment_add_delte_original_option(p)
 
         p.separator('')
         p.separator(environment_examples)
       end
 
       parser.parse!(args)
+    end
+
+    def environment_add_gen_pass_option(parser)
+      parser.on('--gen-pass', "Generate password file ('#{Environment::PASSWORD_FILE}')") do
+        Environment.generate_password_file
+      end
+    end
+
+    def environment_add_enc_option(parser)
+      desc = 'Encrypt environment file and write the result to env_file.enc file'
+
+      parser.on('--enc [env_file]', desc) do |env_file_arg|
+        Environment.new(env_file_arg || ENV['E']).write_encrypted_environment(
+          delete_original: @options[:delete_original]
+        )
+      end
+    end
+
+    def environment_add_delte_original_option(parser)
+      desc = 'Delete original environment file after encryption'
+
+      parser.on('--delete-original', desc) do
+        @options[:delete_original] = true
+      end
     end
 
     def find_command(user_command)

@@ -7,14 +7,19 @@ module ReqWrap
   # Request environment
   #
   class Environment
-    KEY_FILE = '.reqwrap_password'
+    PASSWORD_FILE = '.reqwrap_password'
     ENCRYPTED_ENV_FILE_EXT = '.enc'
 
-    def self.generate_key_file
-      File.write(KEY_FILE, ActiveSupport::EncryptedFile.generate_key)
+    def self.generate_password_file
+      raise ArgumentError, 'Password file already exists' if File.exist?(PASSWORD_FILE)
+
+      File.write(PASSWORD_FILE, ActiveSupport::EncryptedFile.generate_key)
     end
 
     def initialize(env_file)
+      raise ArgumentError, 'Env file not supplied' unless env_file
+      raise ArgumentError, 'Env file does not exist' unless File.exist?(env_file)
+
       @env_file = env_file
     end
 
@@ -52,7 +57,7 @@ module ReqWrap
     def encrypted_file_for(content_path)
       ActiveSupport::EncryptedFile.new(
         content_path: content_path,
-        key_path: KEY_FILE,
+        key_path: PASSWORD_FILE,
         env_key: 'REQWRAP_PASSWORD',
         raise_if_missing_key: true
       )
