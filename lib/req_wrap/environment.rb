@@ -37,6 +37,10 @@ module ReqWrap
       File.delete(@env_file) if delete_original
     end
 
+    def decrypt
+      encrypted_file_for(@env_file).read
+    end
+
     private
 
     # Update current environment from supplied
@@ -44,10 +48,6 @@ module ReqWrap
     #
     def load_str_environment(environment_str)
       Dotenv.update(Dotenv::Parser.new(environment_str).call)
-    end
-
-    def decrypt
-      encrypted_file_for(@env_file).read
     end
 
     def encrypted?
