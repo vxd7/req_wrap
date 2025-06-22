@@ -2,9 +2,9 @@ PATH
   remote: .
   specs:
     req_wrap (0.1.0)
-      activesupport
-      dotenv
-      http
+      activesupport (~> 8.0.0)
+      dotenv (~> 3.1.0)
+      http (~> 5.3.0)
 
 GEM
   remote: https://rubygems.org/
