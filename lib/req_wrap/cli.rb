@@ -38,11 +38,11 @@ module ReqWrap
     end
 
     def environment(args)
-      Environment.new.call(args)
+      ReqWrap::Cli::Environment.new.call(args)
     end
 
     def generate(args)
-      Generate.new.call(args)
+      ReqWrap::Cli::Generate.new.call(args)
     end
 
     def find_command(user_command)
