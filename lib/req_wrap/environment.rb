@@ -38,6 +38,8 @@ module ReqWrap
     end
 
     def decrypt
+      raise ArgumentError, 'Trying to decrypt non-encrypted env file' unless encrypted?
+
       encrypted_file_for(@env_file).read
     end
 
