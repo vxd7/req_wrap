@@ -24,7 +24,7 @@ module ReqWrap
     end
 
     def load_env
-      Environment.new(ENV.fetch('E', '.env')).load
+      Environment.new.load
     end
 
     def to_s

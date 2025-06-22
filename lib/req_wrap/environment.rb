@@ -16,11 +16,11 @@ module ReqWrap
       File.write(PASSWORD_FILE, ActiveSupport::EncryptedFile.generate_key)
     end
 
-    def initialize(env_file)
-      raise ArgumentError, 'Env file not supplied' unless env_file
-      raise ArgumentError, 'Env file does not exist' unless File.exist?(env_file)
+    def initialize(env_file = nil)
+      @env_file = env_file || default_env_file
 
-      @env_file = env_file
+      raise ArgumentError, 'Env file not supplied' unless @env_file
+      raise ArgumentError, 'Env file does not exist' unless File.exist?(@env_file)
     end
 
     def load
@@ -44,6 +44,13 @@ module ReqWrap
     end
 
     private
+
+    # Default env file is given by 'E' environment variable
+    # and will be used by different scripts and classes of this gem;
+    #
+    def default_env_file
+      ENV['E']
+    end
 
     # Update current environment from supplied
     # unparsed str
