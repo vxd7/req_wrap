@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'activesupport'
-  spec.add_dependency 'dotenv'
-  spec.add_dependency 'http'
+  spec.add_dependency 'activesupport', '~> 8.0.0'
+  spec.add_dependency 'dotenv', '~> 3.1.0'
+  spec.add_dependency 'http', '~> 5.3.0'
 end
