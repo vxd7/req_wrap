@@ -20,14 +20,17 @@ module ReqWrap
         end
 
         parser.parse!(args)
-        generate_request!(args)
+        return generate_request!(args) unless args.empty?
+
+        puts parser
+        exit(1)
       end
 
       private
 
       def generate_request!(args)
         request_file = args.shift.strip
-        raise ArgumentError, 'request_file is required' unless request_file
+        raise ArgumentError, 'request_file argument cannot be empty' if request_file.empty?
 
         Generator::Req.new(request_file, @options).call
       end
@@ -37,7 +40,7 @@ module ReqWrap
           Usage: req_wrap g [options...] <request_file>
 
           <request_file> can be either absolute path to filename or relative path.
-          Ruby extension (.rb) is optional and will be added automatically.
+          Ruby extension (.rb) is optional.
 
         BANNER
       end
