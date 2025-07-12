@@ -61,11 +61,13 @@ module ReqWrap
 
       Tempfile.create(['', "-#{@env_file}"]) do |tmp_file|
         original_content = read
-        File.write(tmp_file, original_content)
+        tmp_file.write(original_content)
+        tmp_file.flush
 
-        launch_external_editor(editor, tmp_file)
+        launch_external_editor(editor, tmp_file.path)
 
-        new_content = File.read(tmp_file)
+        tmp_file.rewind
+        new_content = tmp_file.read
         write(new_content) if original_content != new_content
       end
     end
