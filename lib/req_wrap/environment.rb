@@ -49,7 +49,7 @@ module ReqWrap
       File.delete(@env_file) if File.exist?(@env_file)
     end
 
-    def write_encrypted_environment(delete_original: false)
+    def encrypt(delete_original: false)
       validate(raise_error: true)
 
       Environment.new("#{@env_file}#{ENCRYPTED_ENV_FILE_EXT}").write(read)

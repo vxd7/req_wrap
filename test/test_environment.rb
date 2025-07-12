@@ -86,7 +86,7 @@ class TestEnvironment < Minitest::Test
     end
   end
 
-  def test_write_encrypted_environment
+  def test_encrypt
     password_file = ReqWrap::Environment.generate_password_file
 
     with_plaintext_test_env do |test_env_path|
@@ -104,7 +104,7 @@ class TestEnvironment < Minitest::Test
     File.delete(password_file) if File.exist?(password_file)
   end
 
-  def test_write_encrypted_environment_with_delete_original
+  def test_encrypt_with_delete_original
     password_file = ReqWrap::Environment.generate_password_file
 
     with_plaintext_test_env do |test_env_path|

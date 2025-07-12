@@ -63,7 +63,7 @@ module ReqWrap
         desc = 'Encrypt environment file and write the result to env_file.enc file'
 
         parser.on('--enc [env_file]', desc) do |env_file|
-          ReqWrap::Environment.new(env_file).write_encrypted_environment(
+          ReqWrap::Environment.new(env_file).encrypt(
             delete_original: @options[:delete_original]
           )
         end
