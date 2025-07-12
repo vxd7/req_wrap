@@ -66,7 +66,7 @@ module ReqWrap
     end
 
     def http
-      client = HTTP.timeout(@timeout)
+      client = HTTP.timeout(@timeout).use(:auto_inflate)
       client = client.use(logging: { logger: @logger }) if @logger
 
       client
