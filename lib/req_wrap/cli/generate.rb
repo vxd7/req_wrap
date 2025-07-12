@@ -7,25 +7,30 @@ require 'req_wrap/generator/req'
 module ReqWrap
   class Cli
     class Generate
+      def initialize
+        @options = {}
+      end
+
       def call(args)
         parser = OptionParser.new(banner) do |p|
-          # Dummy argument. Will be used when new request types are added
-          #
-          p.on('--http', 'Generate new dummy HTTP request (default)')
+          add_desc_option(p)
 
           p.separator('')
           p.separator(examples)
         end
 
         parser.parse!(args)
-
-        request_file = args.shift.strip
-        raise ArgumentError, 'request_file is required' unless request_file
-
-        Generator::Req.new(request_file).call
+        generate_request!(args)
       end
 
       private
+
+      def generate_request!(args)
+        request_file = args.shift.strip
+        raise ArgumentError, 'request_file is required' unless request_file
+
+        Generator::Req.new(request_file, @options).call
+      end
 
       def banner
         <<~BANNER
@@ -44,6 +49,14 @@ module ReqWrap
           - req_wrap g sample_req.rb          # Create './sample_req.rb' request file
           - req_wrap g requests/sample_req.rb # Create './requests/sample_req.rb' request file
         EXAMPLES
+      end
+
+      def add_desc_option(parser)
+        option_desc = 'Add optional description to the generated request definition'
+
+        parser.on('-d', '--desc [description]', option_desc) do |request_description|
+          @options[:request_description] = request_description.strip
+        end
       end
     end
   end
