@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'dotenv'
+require 'tempfile'
 require 'active_support/encrypted_file'
 
 module ReqWrap
@@ -11,41 +12,76 @@ module ReqWrap
     ENCRYPTED_ENV_FILE_EXT = '.enc'
 
     def self.generate_password_file
-      raise ArgumentError, 'Password file already exists' if File.exist?(PASSWORD_FILE)
+      path = File.expand_path("./#{PASSWORD_FILE}")
+      raise ArgumentError, 'Password file already exists' if File.exist?(path)
 
-      File.write(PASSWORD_FILE, ActiveSupport::EncryptedFile.generate_key)
+      File.write(path, ActiveSupport::EncryptedFile.generate_key)
+      path
     end
 
     def initialize(env_file = nil)
       @env_file = env_file || default_env_file
     end
 
+    def encrypted?
+      @env_file.end_with?(ENCRYPTED_ENV_FILE_EXT)
+    end
+
     def load
       return unless validate
-      return load_str_environment(decrypt) if encrypted?
 
-      Dotenv.load(@env_file)
+      load_str_environment(read)
+    end
+
+    def read
+      return decrypt if encrypted?
+
+      File.read(@env_file, mode: 'rb:BOM|utf-8')
+    end
+
+    def write(content)
+      return encrypted_file_for(@env_file).write(content) if encrypted?
+
+      File.write(@env_file, content)
+    end
+
+    def delete
+      File.delete(@env_file) if File.exist?(@env_file)
     end
 
     def write_encrypted_environment(delete_original: false)
       validate(raise_error: true)
 
-      encrypted_file_for("#{@env_file}#{ENCRYPTED_ENV_FILE_EXT}").write(
-        File.read(@env_file, mode: 'rb:BOM|utf-8')
-      )
+      Environment.new("#{@env_file}#{ENCRYPTED_ENV_FILE_EXT}").write(read)
+      delete if delete_original
+    end
 
-      File.delete(@env_file) if delete_original
+    def change(editor)
+      return change_encrypted_environment(editor) if encrypted?
+
+      Tempfile.create(['', "-#{@env_file}"]) do |tmp_file|
+        original_content = read
+        File.write(tmp_file, original_content)
+
+        launch_external_editor(editor, tmp_file)
+
+        new_content = File.read(tmp_file)
+        write(new_content) if original_content != new_content
+      end
+    end
+
+    private
+
+    def change_encrypted_environment(editor)
+      encrypted_file_for(@env_file).change do |decrypted_file_path|
+        launch_external_editor(editor, decrypted_file_path)
+      end
     end
 
     def decrypt
       validate(raise_error: true)
-
-      raise ArgumentError, 'Trying to decrypt non-encrypted env file' unless encrypted?
-
       encrypted_file_for(@env_file).read
     end
-
-    private
 
     # Default env file is given by 'E' environment variable
     # and will be used by different scripts and classes of this gem;
@@ -59,10 +95,6 @@ module ReqWrap
     #
     def load_str_environment(environment_str)
       Dotenv.update(Dotenv::Parser.new(environment_str).call)
-    end
-
-    def encrypted?
-      @env_file.end_with?(ENCRYPTED_ENV_FILE_EXT)
     end
 
     def encrypted_file_for(content_path)
@@ -88,6 +120,10 @@ module ReqWrap
       end
 
       true
+    end
+
+    def launch_external_editor(editor, file_path)
+      system(editor, file_path.to_s)
     end
   end
 end

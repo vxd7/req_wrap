@@ -7,16 +7,19 @@ require 'req_wrap/environment'
 module ReqWrap
   class Cli
     class Environment
+      DEFAULT_EDITOR = 'vi'
+
       def initialize
         @options = {
           delete_original: false
         }
       end
 
-      def call(args)
+      def call(args) # rubocop:disable Metrics/MethodLength
         parser = OptionParser.new(banner) do |p|
           add_gen_pass_option(p)
           add_enc_option(p)
+          add_change_option(p)
           add_delete_original_option(p)
           add_decrypt_option(p)
 
@@ -24,7 +27,10 @@ module ReqWrap
           p.separator(examples)
         end
 
-        parser.parse!(args)
+        return parser.parse!(args) unless args.empty?
+
+        puts parser
+        exit(1)
       end
 
       private
@@ -40,8 +46,10 @@ module ReqWrap
       def examples
         <<~EXAMPLES
           Examples of invocation:
-          - req_wrap e --enc env_file.env   # Encrypt environment file env_file.env using generated password
-          - E=env_file.env req_wrap e --enc # Encrypt environment file env_file.env using generated password
+          - req_wrap e --gen-pass                     # Generate encryption password
+          - req_wrap e --enc env_file.env             # Encrypt environment file env_file.env using generated password
+          - E=env_file.env req_wrap e --enc           # Encrypt environment file env_file.env using generated password
+          - EDITOR=vim req_wrap e --edit env_file.enc # Decrypt environment file, open editor and re-encrypt
         EXAMPLES
       end
 
@@ -61,6 +69,14 @@ module ReqWrap
         end
       end
 
+      def add_change_option(parser)
+        desc = 'Edit encrypted environment using supplied text editor'
+
+        parser.on('--change [enc_file]', desc) do |env_file|
+          ReqWrap::Environment.new(env_file).change(ENV.fetch('EDITOR', DEFAULT_EDITOR))
+        end
+      end
+
       def add_delete_original_option(parser)
         desc = 'Delete original environment file after encryption'
 
@@ -71,7 +87,7 @@ module ReqWrap
 
       def add_decrypt_option(parser)
         parser.on('--decrypt [env_file]', 'Decrypt env file and print it to stdout') do |env_file|
-          puts ReqWrap::Environment.new(env_file).decrypt
+          puts ReqWrap::Environment.new(env_file).read
         end
       end
     end
