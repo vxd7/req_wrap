@@ -48,7 +48,8 @@ module ReqWrap
 
       def prepare_request_description
         request_description = @options[:request_description]
-        return if request_description&.empty?
+        return unless request_description
+        return if request_description.empty?
 
         lines = StringWrapper.wrap_string(request_description, to: 79)
         lines << ''
