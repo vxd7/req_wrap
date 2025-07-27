@@ -4,19 +4,12 @@ require 'logger'
 require 'http'
 
 require 'req_wrap/environment'
-require 'req_wrap/request_callable'
 
 module ReqWrap
   DEFAULT_LOGGER = Logger.new($stdout)
 
   class Req
     attr_reader :response, :elapsed_time
-
-    def self.inherited(subclass)
-      subclass.prepend(RequestCallable)
-
-      super
-    end
 
     def initialize(timeout: 10, logger: DEFAULT_LOGGER)
       @timeout = timeout
