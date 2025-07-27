@@ -91,7 +91,7 @@ class TestEnvironment < Minitest::Test
 
     with_plaintext_test_env do |test_env_path|
       env = ReqWrap::Environment.new(test_env_path)
-      env.write_encrypted_environment
+      env.encrypt
 
       enc_env_path = "#{test_env_path}.enc"
       assert_path_exists(enc_env_path)
@@ -109,7 +109,7 @@ class TestEnvironment < Minitest::Test
 
     with_plaintext_test_env do |test_env_path|
       env = ReqWrap::Environment.new(test_env_path)
-      env.write_encrypted_environment(delete_original: true)
+      env.encrypt(delete_original: true)
 
       assert_path_exists("#{test_env_path}.enc")
       refute_path_exists(test_env_path)
