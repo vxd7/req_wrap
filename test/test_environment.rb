@@ -118,6 +118,34 @@ class TestEnvironment < Minitest::Test
     File.delete(password_file) if File.exist?(password_file)
   end
 
+  def test_change_with_encrypted_file
+    new_content = 'NEW=content'
+    editor_path = create_ruby_editor(new_content)
+
+    with_encrypted_test_env do |test_env_path|
+      env = ReqWrap::Environment.new(test_env_path)
+
+      env.change(editor_path)
+      assert_equal("#{TEST_ENV}#{new_content}", env.read)
+    end
+  ensure
+    File.delete(editor_path) if File.exist?(editor_path)
+  end
+
+  def test_change_with_plaintext_file
+    new_content = 'NEW=content'
+    editor_path = create_ruby_editor(new_content)
+
+    with_plaintext_test_env do |test_env_path|
+      env = ReqWrap::Environment.new(test_env_path)
+
+      env.change(editor_path)
+      assert_equal("#{TEST_ENV}#{new_content}", env.read)
+    end
+  ensure
+    File.delete(editor_path) if File.exist?(editor_path)
+  end
+
   private
 
   def verify_test_env
@@ -150,5 +178,22 @@ class TestEnvironment < Minitest::Test
     [password_file, TEST_ENV_ENC_FILENAME].each do |fname|
       File.delete(fname) if File.exist?(fname)
     end
+  end
+
+  # Simple ruby script which appends text line to the
+  # first ARGV argument it receives
+  #
+  def create_ruby_editor(append_content)
+    editor_path = File.expand_path('./editor.rb')
+
+    File.write(editor_path, <<~EDITOR)
+      #!/usr/bin/env ruby
+
+      File.write(ARGV.first, '#{append_content}', mode: 'a')
+    EDITOR
+
+    File.chmod(0o744, editor_path)
+
+    editor_path
   end
 end

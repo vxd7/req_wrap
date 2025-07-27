@@ -125,7 +125,7 @@ module ReqWrap
     end
 
     def launch_external_editor(editor, file_path)
-      system(editor, file_path.to_s)
+      system(editor, file_path.to_s, exception: true)
     end
   end
 end
