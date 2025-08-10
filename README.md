@@ -58,6 +58,17 @@ Simply change the definition of the `#call` method and the request can be
 executed like any `Ruby` file: `ruby my_request.rb` which will make the actual
 request and print the results.
 
+The gem provides several quality of life methods which can be used to simplify
+working with requests and responses. Some of these are:
+
+- `#load_env` -- load the request environment
+- `#response` -- reference to the latest `HTTP` response
+- `#executed_request` -- reference to the latest executed `HTTP` request
+- `#responses` -- `Ruby` array with the list of all `HTTP` responses
+- `#save_response` -- save given (or last by default) response to current directory
+
+Additionally, see the `ReqWrap::Req` file definition.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run
