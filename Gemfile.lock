@@ -141,4 +141,4 @@ DEPENDENCIES
   rubocop (~> 1.21)
 
 BUNDLED WITH
-   2.7.1
+   2.5.20
