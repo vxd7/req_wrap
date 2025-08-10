@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'erb'
+
+require 'active_support'
 require 'active_support/inflector/methods'
 require 'req_wrap/generator/string_wrapper'
 

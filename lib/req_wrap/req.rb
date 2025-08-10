@@ -3,6 +3,7 @@
 require 'logger'
 require 'http'
 
+require 'active_support'
 require 'active_support/inflector/methods'
 
 require 'req_wrap/environment'

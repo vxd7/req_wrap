@@ -2,6 +2,8 @@
 
 require 'dotenv'
 require 'tempfile'
+
+require 'active_support'
 require 'active_support/encrypted_file'
 
 module ReqWrap
