@@ -40,5 +40,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dotenv', '~> 3.1.0'
   spec.add_dependency 'http', '~> 5.3.1'
 
-  spec.add_development_dependency 'bundler', '~> 2.2'
+  spec.add_development_dependency 'bundler', '~> 2.5.0'
 end
