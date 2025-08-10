@@ -10,11 +10,11 @@ Gem::Specification.new do |spec|
 
   github_repo = 'https://github.com/vxd7/req_wrap'
 
-  spec.summary = 'Wrapper for HTTP requests testing and prototyping'
+  spec.summary = 'Simple API client with environment management'
   spec.description = <<~DESCRIPTION
-    Plain Ruby wrapper for HTTP requests testing and prototyping with simple environment management.
+    Plain Ruby API client for testing and prototyping with simple environment management.
     Supports encrypted environment definitions. Features optional commandline interface and
-    request definition generation.
+    code generation.
   DESCRIPTION
 
   spec.homepage = github_repo
