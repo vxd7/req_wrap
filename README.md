@@ -42,7 +42,7 @@ require 'req_wrap'
 
 class MyRequest < ReqWrap::Req
   def call
-    http.get('https://example.com')
+    http.get('https://httpbin.org/ip')
   end
 end
 

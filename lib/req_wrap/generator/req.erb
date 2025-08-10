@@ -7,7 +7,7 @@ require 'req_wrap'
 <% end -%>
 class <%= request_class_name %> < ReqWrap::Req
   def call
-    http.get('https://example.com')
+    http.get('https://httpbin.org/ip')
   end
 end
 
