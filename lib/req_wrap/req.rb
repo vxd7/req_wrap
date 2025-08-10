@@ -2,7 +2,8 @@
 
 require 'logger'
 require 'http'
-require 'active_support/core_ext/string'
+
+require 'active_support/inflector/methods'
 
 require 'req_wrap/environment'
 require 'req_wrap/http_features/response_store'
@@ -24,7 +25,10 @@ module ReqWrap
     end
 
     def save_response(response_to_save = response, name: nil)
-      req_class = self.class.name.demodulize.underscore
+      req_class = ActiveSupport::Inflector.underscore(
+        ActiveSupport::Inflector.demodulize(self.class.name)
+      )
+
       time = Time.now.utc.iso8601(4)
       filename = [req_class, time, name, 'response.txt'].join('_')
 
