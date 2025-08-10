@@ -1,0 +1,19 @@
+# frozen_string_literal: true
+
+require 'req_wrap'
+
+<% if request_description -%>
+<%= request_description %>
+<% end -%>
+class <%= request_class_name %> < ReqWrap::Req
+  def call
+    http.get('https://httpbin.org/ip')
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  <%= request_name %> = <%= request_class_name %>.new(logger: nil)
+
+  <%= request_name %>.load_env
+  puts <%= request_name %>.call
+end
